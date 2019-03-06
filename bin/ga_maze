@@ -3,41 +3,34 @@
 
 require_relative "../lib/ga_maze"
 require "byebug"
-
-# GAMaze::Algorithm.new.run
-# board = [
-#   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
-#   ["#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#"],
-#   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", " ", " ", "#"],
-#   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", "#", " ", "#"],
-#   ["#", " ", "#", "#", "#", "#", "#", "#", " ", "#", " ", "#", "#", " ", "#"],
-#   ["#", "P", "#", " ", "#", "#", " ", " ", " ", "#", " ", "#", "#", " ", "#"],
-#   ["#", " ", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", "#"],
-#   ["#", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#"],
-#   ["#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "G", "#"],
-#   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
-# ].freeze
+require "pry"
+require "logger"
 
 # Population
-population = Array.new(100) { GAMaze::Genome.new(goal: [8, 13]) }
+population = Array.new(1000) { GAMaze::Genome.new(goal: [8, 13]) }
 generation = 0
+fittest = GAMaze::Genome.new(goal: [8, 13])
+logger = Logger.new(STDOUT)
 
 loop do
   generation += 1
 
-  break if population.first.manhattan_distance == 3
-  # break if generation >= 1000
+  # puts "Current distance: #{population.first.manhattan_distance}"
+  break if fittest.manhattan_distance == 1
 
   population.each do |individual|
     # Calculate fitness for each individual
-    maze = GAMaze::Maze.new(genome: individual) #, board: temp_board)
+    maze = GAMaze::Maze.new(genome: individual)
     maze.run
   end
 
   # Selection
   fittest, second_fittest = population.sort.take(2)
+  logger.info("Generation: #{generation}")
+  # puts "Fittest: #{fittest.fitness}\tSecond fittest: #{second_fittest.fitness}"
+  puts "Manhattan distance: #{fittest.manhattan_distance}"
 
-  # Crossover
+  # Crossover (one point crossover)
   crossover_point = Random.rand(GAMaze::Genome::GENE_LENGTH)
   offspring = GAMaze::Genome.new(
     genes: fittest.genes[0..crossover_point].concat(
@@ -45,6 +38,17 @@ loop do
     ),
     goal: [8, 13]
   )
+
+  # Crossover (uniform crossover)
+  # points = Array.new(10) { Random.rand(2) }
+  # crossover_genes = Array.new(10) do |i|
+  #   if points[i].zero?
+  #     fittest.genes[i]
+  #   else
+  #     second_fittest.genes[i]
+  #   end
+  # end
+  # offspring = GAMaze::Genome.new(genes: crossover_genes, goal: [8, 13])
 
   # Mutation (with mutation rate around 0.2)
   if Random.rand(100) <= 20
@@ -58,8 +62,8 @@ loop do
   population = sorted_population.reverse
 end
 
-solution = population.first
-solution_maze = GAMaze::Maze.new(genome: solution)
+solution = fittest
+solution_maze = GAMaze::Maze.new(genome: solution.dup)
 solution_maze.run
 
 solution.genes.each do |gene|
@@ -72,38 +76,10 @@ solution.genes.each do |gene|
   elsif gene == 4
     solution_maze.move_left
   end
-
   puts solution_maze.to_s
-  puts
 end
 
+puts solution_maze.to_s
 puts "Generation: #{generation}"
-puts "Manhattan distance: #{solution.manhattan_distance}"
+puts "Manhattan distance: #{solution.manhattan_distance}\tSteps: #{solution.steps}"
 puts "Fitness: #{solution.fitness}\tPenalties: #{solution.penalties}"
-
-# maze = GAMaze::Maze.new(genome: population.min)#, board: board)
-# maze.run
-# puts "Fitness: #{maze.genome.fitness}"
-# puts "Manhattan distance: #{maze.genome.manhattan_distance}"
-# puts maze.to_s
-
-# Find fittest
-
-# Initial run
-# maze = GAMaze::Maze.new(genome: first_parent, board: board)
-
-# maze.run
-# puts maze.to_s
-# puts maze.genome.fitness
-
-# Mutation
-# mutation_point = Random.rand(101)
-# first_parent_genes = first_parent.genes[0..mutation_point]
-# second_parent_genes = second_parent.genes[mutation_point + 1..100]
-# offspring =
-#   GAMaze::Genome.new(genes: first_parent_genes.concat(second_parent_genes))
-# maze.genome = offspring
-
-# maze.run
-# # puts maze.to_s
-# # puts maze.genome.fitness
