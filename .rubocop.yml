@@ -1,0 +1,16 @@
+AllCops:
+  TargetRubyVersion: 2.6.0
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/LambdaCall:
+  Enabled: false
+Style/RegexpLiteral:
+  Enabled: false
+Layout/SpaceInsideBlockBraces:
+  Enabled: false
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+Layout/AlignParameters:
+  Enabled: false
+Documentation:
+  Enabled: false
