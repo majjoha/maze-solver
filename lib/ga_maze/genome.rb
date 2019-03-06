@@ -27,7 +27,7 @@ module GAMaze
     end
 
     def fitness
-      manhattan_distance + steps + penalties
+      manhattan_distance + penalties
     end
 
     def manhattan_distance
@@ -50,10 +50,11 @@ module GAMaze
 
     GENE_LENGTH = 100
     MOVES = {
-      1 => :up,
-      2 => :down,
-      3 => :right,
-      4 => :left
+      0 => :wall,
+      1 => :move_up,
+      2 => :move_down,
+      3 => :move_right,
+      4 => :move_left
     }.freeze
   end
 end
