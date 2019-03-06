@@ -7,8 +7,6 @@ require_relative "genome"
 module GAMaze
   class Maze
     def initialize(
-      # board: BOARD,
-      # board: Array.new(ROWS) { Array.new(COLUMNS) },
       genome: Genome.new(goal: [8, 13]),
       completed: false,
       id: SecureRandom.uuid
@@ -16,8 +14,8 @@ module GAMaze
       @board = generate_board
       @genome = genome
       @completed = completed
+      @path = []
       @id = id
-      # byebug
     end
 
     def completed?
@@ -27,12 +25,16 @@ module GAMaze
     def run
       genome.genes.each do |gene|
         if gene == 1
+          @path << :move_up
           move_up
         elsif gene == 2
+          @path << :move_down
           move_down
         elsif gene == 3
+          @path << :move_right
           move_right
         elsif gene == 4
+          @path << :move_left
           move_left
         end
       end
@@ -82,7 +84,7 @@ module GAMaze
       board.map {|row| row.join(" ") }
     end
 
-    attr_accessor :board, :completed, :genome, :id
+    attr_accessor :board, :completed, :genome, :id, :path
 
     private
 
@@ -134,5 +136,12 @@ module GAMaze
     WALL = "#"
     GOAL = "G"
     FLOOR = " "
+    MOVES = {
+      0 => :wall,
+      1 => :move_up,
+      2 => :move_down,
+      3 => :move_right,
+      4 => :move_left
+    }.freeze
   end
 end
