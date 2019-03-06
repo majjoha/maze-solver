@@ -43,7 +43,7 @@ module GAMaze
     end
 
     def inspect
-      "Fitness: #{fitness}. Genes: #{genes}"
+      "Fitness: #{fitness}. Manhattan distance: #{manhattan_distance}"
     end
 
     attr_accessor :current_position, :genes, :path, :penalties, :goal
