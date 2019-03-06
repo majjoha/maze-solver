@@ -1,0 +1,109 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/ga_maze"
+require "byebug"
+
+# GAMaze::Algorithm.new.run
+# board = [
+#   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+#   ["#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#"],
+#   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", " ", " ", "#"],
+#   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", "#", " ", "#"],
+#   ["#", " ", "#", "#", "#", "#", "#", "#", " ", "#", " ", "#", "#", " ", "#"],
+#   ["#", "P", "#", " ", "#", "#", " ", " ", " ", "#", " ", "#", "#", " ", "#"],
+#   ["#", " ", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", "#"],
+#   ["#", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#"],
+#   ["#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "G", "#"],
+#   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
+# ].freeze
+
+# Population
+population = Array.new(100) { GAMaze::Genome.new(goal: [8, 13]) }
+generation = 0
+
+loop do
+  generation += 1
+
+  break if population.first.manhattan_distance == 3
+  # break if generation >= 1000
+
+  population.each do |individual|
+    # Calculate fitness for each individual
+    maze = GAMaze::Maze.new(genome: individual) #, board: temp_board)
+    maze.run
+  end
+
+  # Selection
+  fittest, second_fittest = population.sort.take(2)
+
+  # Crossover
+  crossover_point = Random.rand(GAMaze::Genome::GENE_LENGTH)
+  offspring = GAMaze::Genome.new(
+    genes: fittest.genes[0..crossover_point].concat(
+      second_fittest.genes[crossover_point + 1..GAMaze::Genome::GENE_LENGTH]
+    ),
+    goal: [8, 13]
+  )
+
+  # Mutation (with mutation rate around 0.2)
+  if Random.rand(100) <= 20
+    mutation_point = Random.rand(GAMaze::Genome::GENE_LENGTH + 1)
+    offspring.genes[mutation_point] = GAMaze::Genome::MOVES.keys.sample
+  end
+
+  # Replace worst fitting individual with offspring
+  sorted_population = population.sort.reverse
+  sorted_population[0] = offspring
+  population = sorted_population.reverse
+end
+
+solution = population.first
+solution_maze = GAMaze::Maze.new(genome: solution)
+solution_maze.run
+
+solution.genes.each do |gene|
+  if gene == 1
+    solution_maze.move_up
+  elsif gene == 2
+    solution_maze.move_down
+  elsif gene == 3
+    solution_maze.move_right
+  elsif gene == 4
+    solution_maze.move_left
+  end
+
+  puts solution_maze.to_s
+  puts
+end
+
+puts "Generation: #{generation}"
+puts "Manhattan distance: #{solution.manhattan_distance}"
+puts "Fitness: #{solution.fitness}\tPenalties: #{solution.penalties}"
+
+# maze = GAMaze::Maze.new(genome: population.min)#, board: board)
+# maze.run
+# puts "Fitness: #{maze.genome.fitness}"
+# puts "Manhattan distance: #{maze.genome.manhattan_distance}"
+# puts maze.to_s
+
+# Find fittest
+
+# Initial run
+# maze = GAMaze::Maze.new(genome: first_parent, board: board)
+
+# maze.run
+# puts maze.to_s
+# puts maze.genome.fitness
+
+# Mutation
+# mutation_point = Random.rand(101)
+# first_parent_genes = first_parent.genes[0..mutation_point]
+# second_parent_genes = second_parent.genes[mutation_point + 1..100]
+# offspring =
+#   GAMaze::Genome.new(genes: first_parent_genes.concat(second_parent_genes))
+# maze.genome = offspring
+
+# maze.run
+# # puts maze.to_s
+# # puts maze.genome.fitness
