@@ -7,15 +7,17 @@ require "pry"
 require "logger"
 
 # Population
-population = Array.new(1000) { GAMaze::Genome.new(goal: [8, 13]) }
+POPULATION_SIZE = 1000
+population = Array.new(POPULATION_SIZE) { GAMaze::Genome.new(goal: [8, 13]) }
 generation = 0
 fittest = GAMaze::Genome.new(goal: [8, 13])
 logger = Logger.new(STDOUT)
+PRINT_STEPS = false
+MUTATION_PROBABILITY = 30
 
 loop do
   generation += 1
 
-  # puts "Current distance: #{population.first.manhattan_distance}"
   break if fittest.manhattan_distance == 1
 
   population.each do |individual|
@@ -26,9 +28,7 @@ loop do
 
   # Selection
   fittest, second_fittest = population.sort.take(2)
-  logger.info("Generation: #{generation}")
-  # puts "Fittest: #{fittest.fitness}\tSecond fittest: #{second_fittest.fitness}"
-  puts "Manhattan distance: #{fittest.manhattan_distance}"
+  logger.info("Generation: #{generation.to_s.ljust(10)}\t\tFittest: #{fittest.inspect}")
 
   # Crossover (one point crossover)
   crossover_point = Random.rand(GAMaze::Genome::GENE_LENGTH)
@@ -51,7 +51,7 @@ loop do
   # offspring = GAMaze::Genome.new(genes: crossover_genes, goal: [8, 13])
 
   # Mutation (with mutation rate around 0.2)
-  if Random.rand(100) <= 20
+  if Random.rand(100) <= 30
     mutation_point = Random.rand(GAMaze::Genome::GENE_LENGTH + 1)
     offspring.genes[mutation_point] = GAMaze::Genome::MOVES.keys.sample
   end
@@ -76,10 +76,10 @@ solution.genes.each do |gene|
   elsif gene == 4
     solution_maze.move_left
   end
-  puts solution_maze.to_s
+  puts solution_maze.to_s if PRINT_STEPS
 end
 
+puts
 puts solution_maze.to_s
-puts "Generation: #{generation}"
+puts "Generation: #{generation}:\t#{solution.inspect} (#{solution.steps} steps)"
 puts "Manhattan distance: #{solution.manhattan_distance}\tSteps: #{solution.steps}"
-puts "Fitness: #{solution.fitness}\tPenalties: #{solution.penalties}"
