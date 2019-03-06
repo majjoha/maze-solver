@@ -136,12 +136,5 @@ module GAMaze
     WALL = "#"
     GOAL = "G"
     FLOOR = " "
-    MOVES = {
-      0 => :wall,
-      1 => :move_up,
-      2 => :move_down,
-      3 => :move_right,
-      4 => :move_left
-    }.freeze
   end
 end
