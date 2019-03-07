@@ -5,17 +5,24 @@ module GAMaze
     include Comparable
 
     def initialize(
-      current_position: [5, 1],
+      current_position: START_POSITION,
       genes: Array.new(GENE_LENGTH) { MOVES.keys.sample },
       path: [],
       penalties: 0,
-      goal: [0, 0]
+      goal: GOAL
     )
       @current_position = current_position
       @genes = genes
       @path = path
       @penalties = penalties
       @goal = goal
+    end
+
+    def self.new_from_parents(parents:, strategy: UniformCrossover)
+      strategy.perform_crossover(
+        first_parent: parents[0],
+        second_parent: parents[1]
+      )
     end
 
     def add_move(direction)
@@ -46,9 +53,15 @@ module GAMaze
       "Fitness: #{fitness}. Manhattan distance: #{manhattan_distance}"
     end
 
+    def mutate!(mutation_point: Random.rand(GENE_LENGTH + 1))
+      @genes[mutation_point] = MOVES.keys.sample
+    end
+
     attr_accessor :current_position, :genes, :path, :penalties, :goal
 
     GENE_LENGTH = 100
+    GOAL = [8, 13].freeze
+    START_POSITION = [5, 1].freeze
     MOVES = {
       0 => :wall,
       1 => :move_up,
