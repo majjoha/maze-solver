@@ -1,21 +1,19 @@
 # frozen_string_literal: true
 
-require "securerandom"
-require "byebug"
 require_relative "genome"
 
 module GAMaze
   class Maze
     def initialize(
-      genome: Genome.new(goal: [8, 13]),
+      board: generate_board,
       completed: false,
-      id: SecureRandom.uuid
+      genome: Genome.new(goal: [8, 13]),
+      path: []
     )
-      @board = generate_board
-      @genome = genome
+      @board = board
       @completed = completed
-      @path = []
-      @id = id
+      @genome = genome
+      @path = path
     end
 
     def completed?
