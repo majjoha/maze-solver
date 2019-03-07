@@ -6,56 +6,33 @@ module GAMaze
   class Population
     def initialize(individuals: Array.new(POPULATION_SIZE) { Genome.new })
       @individuals = individuals
-      @fitness = 0
     end
 
-    def find_fittest
-      max_fit = -Float::INFINITY
-      max_fit_index = 0
-
-      individuals.each_with_index do |individual, index|
-        if max_fit >= individual.fitness
-          max_fit = individual.fitness
-          max_fit_index = index
-        end
-      end
-
-      @fitness = individuals[max_fit_index].fitness
-      individuals[max_fit_index]
+    def fittest
+      population.min
     end
 
-    def find_second_fittest
-      best = 0
-      second_best = 0
-
-      individuals.each_with_index do |individual, index|
-        if individual.fitness < individuals[best].fitness
-          best = index
-          second_best = individuals[best]
-        else
-          second_best = index
-        end
-      end
-
-      individuals[second_best]
+    def worst_individuals
+      individuals.sort.reverse
     end
 
-    def find_worst_fitting_index
-      min_fit_val = Float::INFINITY
-      min_fit_index = 0
-
-      individuals.each_with_index do |individual, index|
-        if min_fit_val <= individual.fitness
-          min_fit_val = individual.fitness
-          min_fit_index = index
-        end
-      end
-
-      min_fit_index
+    def best_individuals
+      individuals.sort
     end
 
-    attr_accessor :individuals, :fitness
+    def replace_worst_individuals_with(offsprings, amount: INDIVIDUALS_TO_KEEP)
+      individuals.sort.take(amount).concat(offsprings)
+    end
+
+    def calculate_fitness
+      individuals.each {|individual| Maze.new(genome: individual) }.run
+    end
+
+    attr_accessor :individuals
 
     POPULATION_SIZE = 10_000
+    OFFSPRING_RATIO = 0.25
+    OFFSPRINGS = POPULATION_SIZE * OFFSPRING_RATIO
+    INDIVIDUALS_TO_KEEP = POPULATION_SIZE - OFFSPRINGS + 1
   end
 end

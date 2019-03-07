@@ -2,106 +2,91 @@
 
 require "logger"
 require_relative "genome"
-require_relative "population"
+# require_relative "population"
 
 module GAMaze
   class Algorithm
     def initialize(
+      population: Array.new(POPULATION_SIZE) { Genome.new },
       fittest: Genome.new,
-      generations: 0,
-      logger: Logger.new(STDOUT),
-      population: Population.new,
-      second_fittest: Genome.new
+      generation: 0,
+      crossover_strategy: UniformCrossover,
+      debug: false,
+      logger: Logger.new(STDOUT)
     )
-      @fittest = fittest
-      @generations = generations
-      @logger = logger
       @population = population
-      @second_fittest = second_fittest
+      @fittest = fittest
+      @generation = generation
+      @crossover_strategy = crossover_strategy
+      @debug = debug
+      @logger = logger
     end
 
     def run
-      while population.fitness < 50
-        @generations += 1
+      loop do
+        @generation += 1
 
-        # Find the two best performing individuals
-        selection
+        break if fittest.manhattan_distance == 1
 
-        # Perform a crossover on them
-        crossover
+        # Calculate fitness for each individual
+        population.each { |individual| Maze.new(genome: individual).run }
 
-        # Mutate if the mutation rate is less than or equal to 20 percent
-        mutation if should_mutate?
-
-        # Replace the worst fitting individual with the best fitting individual
-        add_fittest_offspring
-
-        # Calculate the currect fitness of the population
-        population.find_fittest
-
+        # Selection
+        @fittest = population.min
         logger.info(
-          "Generation: #{generations}. Fittest: #{population.fitness}"
+          "Generation: #{generation.to_s.ljust(5)}\t\tFittest: #{fittest.inspect}"
         )
+
+        # Mutation and crossover
+        offsprings = produce_offsprings.each do |offspring|
+          offspring.mutate! if should_mutate?
+        end
+
+        # Replace worst fitting individual with offspring
+        @population = replace_worst_individuals_with(offsprings)
       end
-
-      logger.info("Solution found in generation #{generations}")
-      logger.info(population.find_fittest)
+      fittest
     end
 
-    def selection
-      @fittest = population.find_fittest
-      @second_fittest = population.find_second_fittest
-    end
-
-    attr_accessor :fittest, :generations, :logger, :population, :second_fittest
+    attr_accessor :population, :fittest, :generation,
+      :crossover_strategy, :debug, :logger
 
     private
 
-    def should_mutate?
-      Random.rand(100) <= MUTATION_RATE
+    def produce_offspring(first_parent:, second_parent:)
+      Genome.new_from_parents(parents: [first_parent, second_parent])
     end
 
-    def find_fittest_offspring
-      return fittest if fittest > second_fittest
-
-      second_fittest
-    end
-
-    def add_fittest_offspring
-      worst_fitness_index = population.find_worst_fitting_index
-      @population.individuals[worst_fitness_index] = find_fittest_offspring
-    end
-
-    def mutation
-      mutation_point = Random.rand(Genome::GENE_LENGTH)
-
-      @fittest.genes[mutation_point] = Random.rand(5)
-
-      # if fittest.genes[mutation_point].zero?
-      #   @fittest.genes[mutation_point] = 1
-      # else
-      #   @fittest.genes[mutation_point] = 0
-      # end
-
-      # mutation_point = Random.rand(Genome::GENE_LENGTH)
-
-      # if second_fittest.genes[mutation_point].zero?
-      #   @second_fittest.genes[mutation_point] = 1
-      # else
-      #   @second_fittest.genes[mutation_point] = 0
-      # end
-    end
-
-    def crossover
-      crossover_point = Random.rand(Genome::GENE_LENGTH)
-
-      Array.new(crossover_point).each_with_index do |_, i|
-        temp = fittest.genes[i]
-        @fittest.genes[i] = second_fittest.genes[i]
-        @second_fittest.genes[i] = temp
+    def produce_offsprings
+      best_individuals.each_cons(2).map do |first_parent, second_parent|
+        produce_offspring(
+          first_parent: first_parent, second_parent: second_parent
+        )
       end
     end
 
-    MUTATION_RATE = 20
+    def replace_worst_individuals_with(offsprings)
+      population
+        .sort
+        .take(POPULATION_SIZE - OFFSPRINGS + 1)
+        .concat(offsprings)
+    end
+
+    def best_individuals
+      population.sort.take(OFFSPRINGS)
+    end
+
+    def worst_individuals
+      population.sort.reverse
+    end
+
+    def should_mutate?
+      Random.rand(100) <= MUTATION_PROBABILITY
+    end
+
+    MUTATION_PROBABILITY = 20
+    POPULATION_SIZE = 1000
+    OFFSPRING_RATIO = 0.25
+    OFFSPRINGS = POPULATION_SIZE * OFFSPRING_RATIO
   end
 end

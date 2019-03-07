@@ -2,84 +2,27 @@
 # frozen_string_literal: true
 
 require_relative "../lib/ga_maze"
-require "byebug"
-require "pry"
 require "logger"
 
-# Population
-POPULATION_SIZE = 1000
-population = Array.new(POPULATION_SIZE) { GAMaze::Genome.new(goal: [8, 13]) }
-generation = 0
-fittest = GAMaze::Genome.new(goal: [8, 13])
-logger = Logger.new(STDOUT)
-PRINT_STEPS = false
-MUTATION_PROBABILITY = 30
+algorithm = GAMaze::Algorithm.new
+algorithm.run
 
-loop do
-  generation += 1
-
-  break if fittest.manhattan_distance == 1
-
-  population.each do |individual|
-    # Calculate fitness for each individual
-    maze = GAMaze::Maze.new(genome: individual)
-    maze.run
-  end
-
-  # Selection
-  fittest, second_fittest = population.sort.take(2)
-  logger.info("Generation: #{generation.to_s.ljust(10)}\t\tFittest: #{fittest.inspect}")
-
-  # Crossover (one point crossover)
-  crossover_point = Random.rand(GAMaze::Genome::GENE_LENGTH)
-  offspring = GAMaze::Genome.new(
-    genes: fittest.genes[0..crossover_point].concat(
-      second_fittest.genes[crossover_point + 1..GAMaze::Genome::GENE_LENGTH]
-    ),
-    goal: [8, 13]
-  )
-
-  # Crossover (uniform crossover)
-  # points = Array.new(10) { Random.rand(2) }
-  # crossover_genes = Array.new(10) do |i|
-  #   if points[i].zero?
-  #     fittest.genes[i]
-  #   else
-  #     second_fittest.genes[i]
-  #   end
-  # end
-  # offspring = GAMaze::Genome.new(genes: crossover_genes, goal: [8, 13])
-
-  # Mutation (with mutation rate around 0.2)
-  if Random.rand(100) <= 30
-    mutation_point = Random.rand(GAMaze::Genome::GENE_LENGTH + 1)
-    offspring.genes[mutation_point] = GAMaze::Genome::MOVES.keys.sample
-  end
-
-  # Replace worst fitting individual with offspring
-  sorted_population = population.sort.reverse
-  sorted_population[0] = offspring
-  population = sorted_population.reverse
-end
-
-solution = fittest
-solution_maze = GAMaze::Maze.new(genome: solution.dup)
-solution_maze.run
+solution = algorithm.fittest
+maze = GAMaze::Maze.new(genome: solution)
+maze.run
 
 solution.genes.each do |gene|
   if gene == 1
-    solution_maze.move_up
+    maze.move_up
   elsif gene == 2
-    solution_maze.move_down
+    maze.move_down
   elsif gene == 3
-    solution_maze.move_right
+    maze.move_right
   elsif gene == 4
-    solution_maze.move_left
+    maze.move_left
   end
-  puts solution_maze.to_s if PRINT_STEPS
 end
 
 puts
-puts solution_maze.to_s
-puts "Generation: #{generation}:\t#{solution.inspect} (#{solution.steps} steps)"
-puts "Manhattan distance: #{solution.manhattan_distance}\tSteps: #{solution.steps}"
+puts maze.to_s
+puts solution.manhattan_distance
