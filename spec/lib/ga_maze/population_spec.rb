@@ -2,31 +2,45 @@
 
 require_relative "../../spec_helper"
 
-describe GAMaze::Population do
-  let(:first_genome) { GAMaze::Genome.new(penalties: 0) }
-  let(:second_genome) { GAMaze::Genome.new(penalties: 100) }
-  let(:offspring) { GAMaze::Genome.new(penalties: 25) }
+describe MazeSolver::Population do
+  let(:first_chromosome) do
+    MazeSolver::Chromosome.new(penalties: 0, positions: [[5, 1]])
+  end
+  let(:second_chromosome) do
+    MazeSolver::Chromosome.new(penalties: 100, positions: [[5, 1]])
+  end
+  let(:offspring) do
+    MazeSolver::Chromosome.new(penalties: 25, positions: [[5, 1]])
+  end
   let(:population) do
-    GAMaze::Population.new(individuals: [first_genome, second_genome])
+    MazeSolver::Population.new(
+      individuals: [first_chromosome, second_chromosome]
+    )
   end
 
   describe "#worst_individuals" do
     it "sorts the individuals by highest fitness score first" do
-      expect(population.worst_individuals).to eq([second_genome, first_genome])
+      expect(population.worst_individuals).to eq(
+        [second_chromosome, first_chromosome]
+      )
     end
   end
 
   describe "#best_individuals" do
     it "sorts the individuals by the lowest fitness score first" do
-      expect(population.best_individuals).to eq([first_genome, second_genome])
+      expect(population.best_individuals).to eq(
+        [first_chromosome, second_chromosome]
+      )
     end
   end
 
   describe "#replace_worst_individuals_with" do
     it "removes the worst N individuals and replaces them with offsprings" do
       expect(
-        population.replace_worst_individuals_with([offspring], amount: 1)
-      ).to eq([first_genome, offspring])
+        population.replace_worst_individuals_with(
+          [offspring], amount: 1
+        ).individuals
+      ).to eq([first_chromosome, offspring])
     end
   end
 end

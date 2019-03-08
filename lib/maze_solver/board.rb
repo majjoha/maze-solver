@@ -2,7 +2,7 @@
 
 require "json"
 
-module GAMaze
+module MazeSolver
   class Board
     def initialize(
       board: JSON.parse(File.read(File.expand_path("board.json")))["board"]

@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
-require_relative "genome"
-
-module GAMaze
+module MazeSolver
   class UniformCrossover
     def self.perform_crossover(
       first_parent:,
       second_parent:,
-      points: Array.new(Genome::GENE_LENGTH) { Random.rand(2) }
+      points: Array.new(Chromosome::GENE_LENGTH) { Random.rand(2) }
     )
       genes = points.map.with_index do |point, index|
         if point.zero?
@@ -17,7 +15,7 @@ module GAMaze
         end
       end
 
-      Genome.new(genes: genes)
+      Chromosome.new(genes: genes)
     end
   end
 end

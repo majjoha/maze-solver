@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "genome"
-
-module GAMaze
+module MazeSolver
   class OnePointCrossover
     def self.perform_crossover(
       first_parent:,
       second_parent:,
-      crossover_point: Random.rand(Genome::GENE_LENGTH)
+      crossover_point: Random.rand(Chromosome::GENE_LENGTH)
     )
 
-      Genome.new(
+      Chromosome.new(
         genes: first_parent.genes[0...crossover_point].concat(
-          second_parent.genes[crossover_point..Genome::GENE_LENGTH]
+          second_parent.genes[crossover_point..Chromosome::GENE_LENGTH]
         )
       )
     end

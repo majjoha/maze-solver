@@ -2,7 +2,7 @@
 
 require "rspec"
 
-require_relative "../lib/ga_maze"
+require_relative "../lib/maze_solver"
 
 RSpec.configure do |config|
   config.expect_with(:rspec) do |c|

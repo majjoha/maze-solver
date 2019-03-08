@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require_relative "../lib/maze_solver"
+
+algorithm = MazeSolver::Algorithm.new
+algorithm.run
+
+maze = MazeSolver::MazeNavigator.new(genome: algorithm.fittest)
+maze.run
+# maze.step
