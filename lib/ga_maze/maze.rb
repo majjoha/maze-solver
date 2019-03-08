@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
-require_relative "genome"
+require "byebug"
+require "json"
 
 module GAMaze
   class Maze
     def initialize(
       board: generate_board,
       completed: false,
-      genome: Genome.new(goal: [8, 13]),
+      genome: Genome.new,
       path: []
     )
       @board = board
@@ -16,26 +17,12 @@ module GAMaze
       @path = path
     end
 
-    def completed?
-      completed
+    def run
+      genome.genes.reject(&:zero?).each {|gene| send(Genome::MOVES[gene]) }
     end
 
-    def run
-      genome.genes.each do |gene|
-        if gene == 1
-          @path << :move_up
-          move_up
-        elsif gene == 2
-          @path << :move_down
-          move_down
-        elsif gene == 3
-          @path << :move_right
-          move_right
-        elsif gene == 4
-          @path << :move_left
-          move_left
-        end
-      end
+    def completed?
+      completed
     end
 
     def move_up
@@ -99,7 +86,7 @@ module GAMaze
     def goal?(cell)
       if cell == GOAL
         @completed = true
-        return true
+        return completed
       end
 
       false
@@ -114,25 +101,25 @@ module GAMaze
     end
 
     def generate_board
-      [
-        ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
-        ["#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#"],
-        ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", " ", " ", "#"],
-        ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", "#", " ", "#"],
-        ["#", " ", "#", "#", "#", "#", "#", "#", " ", "#", " ", "#", "#", " ", "#"],
-        ["#", "I", "#", " ", "#", "#", " ", " ", " ", "#", " ", "#", "#", " ", "#"],
-        ["#", " ", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", "#"],
-        ["#", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#"],
-        ["#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "G", "#"],
-        ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
-      ]
+      JSON.parse(File.read(File.expand_path("board.json")))["board"]
+      # JSON.parse(File.readboard.json"))["board"]
+      # [
+      #   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
+      #   ["#", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "#"],
+      #   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", " ", " ", "#"],
+      #   ["#", " ", "#", "#", "#", "#", " ", "#", " ", "#", "#", "#", "#", " ", "#"],
+      #   ["#", " ", "#", "#", "#", "#", "#", "#", " ", "#", " ", "#", "#", " ", "#"],
+      #   ["#", "I", "#", " ", "#", "#", " ", " ", " ", "#", " ", "#", "#", " ", "#"],
+      #   ["#", " ", "#", " ", "#", "#", "#", "#", "#", "#", " ", " ", " ", " ", "#"],
+      #   ["#", " ", "#", " ", "#", " ", " ", " ", " ", " ", " ", " ", "#", " ", "#"],
+      #   ["#", " ", " ", " ", " ", " ", "#", "#", "#", "#", " ", " ", "#", "G", "#"],
+      #   ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"]
+      # ]
     end
 
-    ROWS = 10
-    COLUMS = 15
-    PLAYER = "P"
-    WALL = "#"
     GOAL = "G"
-    FLOOR = " "
+    PLAYER = "\e[34mP\e[0m"
+    # PLAYER = "P"
+    WALL = "#"
   end
 end
