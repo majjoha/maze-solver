@@ -18,7 +18,7 @@ module MazeSolver
       @goal = goal
     end
 
-    def self.new_from_parents(parents:, strategy: UniformCrossover)
+    def self.new_from_parents(parents:, strategy: OnePointCrossover)
       strategy.perform_crossover(
         first_parent: parents[0],
         second_parent: parents[1]
