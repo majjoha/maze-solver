@@ -14,7 +14,7 @@ module MazeSolver
 
     def run
       chromosome.genes.reject(&:zero?).each do |gene|
-        send(Chromosome::MOVES[gene])
+        method(Chromosome::MOVES[gene]).call
       end
     end
 
