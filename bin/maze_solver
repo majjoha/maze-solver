@@ -7,6 +7,5 @@ require_relative "../lib/maze_solver"
 algorithm = MazeSolver::Algorithm.new
 algorithm.run
 
-maze = MazeSolver::MazeNavigator.new(genome: algorithm.fittest)
-maze.run
-# maze.step
+maze = MazeSolver::MazeNavigator.new(chromosome: algorithm.fittest)
+maze.step
