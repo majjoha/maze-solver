@@ -27,10 +27,8 @@ module MazeSolver
     end
 
     def produce_offsprings
-      individuals.each_cons(2).map do |first_parent, second_parent|
-        chromosome = Chromosome.new_from_parents(
-          parents: [first_parent, second_parent]
-        )
+      individuals.each_cons(2).map do |parents|
+        chromosome = Chromosome.new_from_parents(parents: parents)
         chromosome.mutate! if should_mutate?
         chromosome
       end
