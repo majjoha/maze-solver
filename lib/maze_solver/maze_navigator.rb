@@ -66,11 +66,6 @@ module MazeSolver
       chromosome.add_move(:right)
     end
 
-    def wall
-      last_step = chromosome.path.last
-      chromosome.add_move(last_step) unless last_step.nil?
-    end
-
     def wall?(cell)
       if cell == WALL
         @chromosome.penalties += 1
