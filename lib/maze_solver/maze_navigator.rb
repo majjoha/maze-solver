@@ -31,8 +31,7 @@ module MazeSolver
     private
 
     def move_up
-      return if wall?(board[column - 1][row])
-      return if goal?(board[column - 1][row])
+      return if wall_or_goal?(board[column - 1][row])
 
       board[column][row] = " "
       board[column - 1][row] = PLAYER
@@ -41,8 +40,7 @@ module MazeSolver
     end
 
     def move_down
-      return if wall?(board[column + 1][row])
-      return if goal?(board[column + 1][row])
+      return if wall_or_goal?(board[column + 1][row])
 
       board[column][row] = " "
       board[column + 1][row] = PLAYER
@@ -51,8 +49,7 @@ module MazeSolver
     end
 
     def move_left
-      return if wall?(board[column][row - 1])
-      return if goal?(board[column][row - 1])
+      return if wall_or_goal?(board[column][row - 1])
 
       board[column][row] = " "
       board[column][row - 1] = PLAYER
@@ -61,8 +58,7 @@ module MazeSolver
     end
 
     def move_right
-      return if wall?(board[column][row + 1])
-      return if goal?(board[column][row + 1])
+      return if wall_or_goal?(board[column][row + 1])
 
       board[column][row] = " "
       board[column][row + 1] = PLAYER
@@ -88,6 +84,10 @@ module MazeSolver
       return true if cell == GOAL
 
       false
+    end
+
+    def wall_or_goal?(position)
+      wall?(position) || goal?(position)
     end
 
     def column
