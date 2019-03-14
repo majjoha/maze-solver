@@ -64,15 +64,11 @@ module MazeSolver
       "Penalties: #{penalties}]"
     end
 
-    def inspect
-      to_s
-    end
-
     attr_accessor :positions, :genes, :moves, :penalties, :goal
 
-    GENE_LENGTH = 50
-    GOAL = [8, 13].freeze
-    START_POSITION = [8, 1].freeze
+    GENE_LENGTH = 30
+    GOAL = Board.goal
+    START_POSITION = Board.start
     MOVES = {
       0 => :wall,
       1 => :move_up,
