@@ -7,14 +7,19 @@ describe MazeSolver::UniformCrossover do
   let(:first_genes) { [0, 4, 3, 0, 1, 2, 4, 3, 4, 1] }
   let(:second_genes) { [1, 4, 3, 1, 2, 4, 0, 2, 1, 0] }
   let(:offspring_genes) { [1, 4, 3, 0, 2, 4, 4, 2, 1, 1] }
-  let(:first_parent) { MazeSolver::Chromosome.new(genes: first_genes) }
-  let(:second_parent) { MazeSolver::Chromosome.new(genes: second_genes) }
-  let(:offspring) { MazeSolver::Chromosome.new(genes: offspring_genes) }
 
   describe ".perform_crossover" do
+    let(:first_parent) { instance_double("chromosome") }
+    let(:second_parent) { instance_double("chromosome") }
+    let(:offspring) { instance_double("chromosome") }
+
     it "performs a uniform crossover on two parents" do
+      allow(first_parent).to receive(:genes).and_return(first_genes)
+      allow(second_parent).to receive(:genes).and_return(second_genes)
+      allow(offspring).to receive(:genes).and_return(offspring_genes)
+
       expect(
-        MazeSolver::UniformCrossover.perform_crossover(
+        described_class.perform_crossover(
           first_parent: first_parent,
           second_parent: second_parent,
           points: points

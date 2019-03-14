@@ -13,7 +13,7 @@ describe MazeSolver::Population do
     MazeSolver::Chromosome.new(penalties: 25, positions: [[5, 1]])
   end
   let(:population) do
-    MazeSolver::Population.new(
+    described_class.new(
       individuals: [first_chromosome, second_chromosome]
     )
   end
