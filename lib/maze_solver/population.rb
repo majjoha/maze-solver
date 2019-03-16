@@ -16,7 +16,7 @@ module MazeSolver
 
     def replace_worst_individuals_with(offsprings, amount: INDIVIDUALS_TO_KEEP)
       Population.new(
-        individuals: individuals.sort.take(amount).concat(offsprings)
+        individuals: best_individuals.take(amount).concat(offsprings)
       )
     end
 
@@ -35,7 +35,7 @@ module MazeSolver
     end
 
     def worst_individuals
-      individuals.sort.reverse
+      best_individuals.reverse
     end
 
     attr_accessor :individuals
