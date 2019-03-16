@@ -18,14 +18,6 @@ describe MazeSolver::Population do
     )
   end
 
-  describe "#worst_individuals" do
-    it "sorts the individuals by highest fitness score first" do
-      expect(population.worst_individuals).to eq(
-        [second_chromosome, first_chromosome]
-      )
-    end
-  end
-
   describe "#best_individuals" do
     it "sorts the individuals by the lowest fitness score first" do
       expect(population.best_individuals).to eq(
