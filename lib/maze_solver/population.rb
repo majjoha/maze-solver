@@ -38,10 +38,6 @@ module MazeSolver
       individuals.sort
     end
 
-    def worst_individuals
-      best_individuals.reverse
-    end
-
     def should_mutate?
       Random.rand(100) <= MUTATION_PROBABILITY
     end
