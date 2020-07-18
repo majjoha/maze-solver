@@ -4,7 +4,7 @@
 Maze Solver is a demonstration of how genetic algorithms can be utilized to move
 an agent from a given position to a goal in a maze environment. It reads a maze
 located in the
-[`board.json`](https://github.com/majjoha/maze-solver/blob/master/board.json)
+[`board.json`](https://github.com/majjoha/maze-solver/blob/main/board.json)
 file where `#`, `S`, and `G` indicate a wall, start position, and goal,
 respectively.
 
@@ -33,4 +33,4 @@ rspec
 ```
 
 ## License
-See [LICENSE](https://github.com/majjoha/maze-solver/blob/master/LICENSE).
+See [LICENSE](https://github.com/majjoha/maze-solver/blob/main/LICENSE).
