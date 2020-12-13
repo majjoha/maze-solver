@@ -1,5 +1,5 @@
 # Maze Solver
-[![Build Status](https://travis-ci.org/majjoha/maze-solver.svg)](https://travis-ci.org/majjoha/maze-solver)
+![CI](https://github.com/majjoha/maze-solver/workflows/CI/badge.svg)
 
 Maze Solver is a demonstration of how genetic algorithms can be utilized to move
 an agent from a given position to a goal in a maze environment. It reads a maze
